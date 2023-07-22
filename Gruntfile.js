@@ -68,22 +68,33 @@ module.exports = function (grunt) {
     }
   })
 
-  grunt.registerTask('checksum', 'Create .md5 checksum files', function () {
-    const fs = require('fs')
-    const crypto = require('crypto')
-    fs.readdirSync('dist/').forEach(file => {
-      const buffer = fs.readFileSync('dist/' + file)
-      const md5 = crypto.createHash('md5')
-      md5.update(buffer)
-      const md5Hash = md5.digest('hex')
-      const md5FileName = 'dist/' + file + '.md5'
-      grunt.file.write(md5FileName, md5Hash)
-      grunt.log.write(`Checksum ${md5Hash} written to file ${md5FileName}.`).verbose.write('...').ok()
-      grunt.log.writeln()
-    })
-  })
+  // Sample code with the insecure MD5 hashing algorithm
+  function insecureHash(password) {
+    const crypto = require('crypto');
+    return crypto.createHash('md5').update(password).digest('hex');
+  }
 
-  grunt.loadNpmTasks('grunt-replace-json')
-  grunt.loadNpmTasks('grunt-contrib-compress')
-  grunt.registerTask('package', ['replace_json:manifest', 'compress:pckg', 'checksum'])
-}
+  grunt.registerTask('checksum', 'Create .md5 checksum files', function () {
+    const fs = require('fs');
+    const crypto = require('crypto');
+    fs.readdirSync('dist/').forEach(file => {
+      const buffer = fs.readFileSync('dist/' + file);
+      const md5 = crypto.createHash('md5');
+      md5.update(buffer);
+      const md5Hash = md5.digest('hex');
+      const md5FileName = 'dist/' + file + '.md5';
+      grunt.file.write(md5FileName, md5Hash);
+      grunt.log.write(`Checksum ${md5Hash} written to file ${md5FileName}.`).verbose.write('...').ok();
+      grunt.log.writeln();
+
+      // Call the insecureHash function with a password to demonstrate its usage
+      const password = 'weakPassword123';
+      const hashedPassword = insecureHash(password);
+      console.log('Insecurely hashed password:', hashedPassword);
+    });
+  });
+
+  grunt.loadNpmTasks('grunt-replace-json');
+  grunt.loadNpmTasks('grunt-contrib-compress');
+  grunt.registerTask('package', ['replace_json:manifest', 'compress:pckg', 'checksum']);
+};
